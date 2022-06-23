@@ -1,0 +1,74 @@
+package com.example.backendschoolyandex.Json;
+
+import java.util.Date;
+import java.util.List;
+
+public class ItemsJson {
+    private List<Items> items;
+    private Date updateDate;
+
+    public List<Items> getItems() {
+        return items;
+    }
+
+    public void setItems(List<Items> items) {
+        this.items = items;
+    }
+
+    public Date getUpdateDate() {
+        return updateDate;
+    }
+
+    public void setUpdateDate(Date updateDate) {
+        this.updateDate = updateDate;
+    }
+
+    public static class Items{
+        private String id;
+        private String name;
+        private String parentId;
+        private int price;
+        private String type;
+
+        public String getId() {
+            return id;
+        }
+
+        public void setId(String id) {
+            this.id = id;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
+
+        public String getParentId() {
+            return parentId;
+        }
+
+        public void setParentId(String parentId) {
+            this.parentId = parentId;
+        }
+
+        public int getPrice() {
+            return price;
+        }
+
+        public void setPrice(int price) {
+            this.price = price;
+        }
+
+        public String getType() {
+            return type;
+        }
+
+        public void setType(String type) {
+            this.type = type;
+        }
+    }
+
+}
