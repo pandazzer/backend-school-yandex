@@ -3,6 +3,7 @@ package com.example.backendschoolyandex.Entities;
 import javax.persistence.*;
 import java.util.Date;
 
+
 @Entity
 @Table(name = "products")
 public class Product {
@@ -18,6 +19,7 @@ public class Product {
     @Column(nullable = false)
     private String type;
     @Column(name = "updatedate", columnDefinition = "TIMESTAMP")
+
     private Date updateDate;
 
 
