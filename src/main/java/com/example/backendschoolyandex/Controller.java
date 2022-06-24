@@ -26,6 +26,7 @@ import java.util.TimeZone;
 public class Controller {
 
     private final ItemsRepo itemsRepo;
+    ObjectMapper mapper = new ObjectMapper();
 
 //    private final ApplicationContext context = new AnnotationConfigApplicationContext(Config.class);
     @Autowired
@@ -35,7 +36,7 @@ public class Controller {
 
     @PostMapping(path = "/imports")
     public ResponseEntity imports(@RequestBody String json) throws JsonProcessingException, ParseException {
-        ObjectMapper mapper = new ObjectMapper();
+
         ItemsJson itemsJson = mapper.readValue(json, ItemsJson.class);
         List<ItemsJson.Items> itemsList = itemsJson.getItems();
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
@@ -73,12 +74,10 @@ public class Controller {
     @Transactional
     public ResponseEntity delete(@PathVariable("id") String id) throws JsonProcessingException {
         if (!isValidUUID(id)){
-            ObjectMapper mapper = new ObjectMapper();
             String body = mapper.writeValueAsString(new ErrorResponseJson(404, "Validation Failed"));
             return ResponseEntity.status(400).contentType(MediaType.APPLICATION_JSON).body(body);
         }
         if (itemsRepo.findByid(id) == null){
-            ObjectMapper mapper = new ObjectMapper();
             String response = mapper.writeValueAsString(new ErrorResponseJson(404, "Item not found"));
             return ResponseEntity.status(404).contentType(MediaType.APPLICATION_JSON).body(response);
         }
@@ -94,7 +93,6 @@ public class Controller {
 
     @GetMapping(path = "/nodes/{id}")
     public ResponseEntity nodes(@PathVariable("id") String id) throws JsonProcessingException {
-        ObjectMapper mapper = new ObjectMapper();
         if (!isValidUUID(id)){
             String body = mapper.writeValueAsString(new ErrorResponseJson(404, "Validation Failed"));
             return ResponseEntity.status(400).contentType(MediaType.APPLICATION_JSON).body(body);
