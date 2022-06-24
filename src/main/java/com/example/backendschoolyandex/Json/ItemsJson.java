@@ -1,12 +1,15 @@
 package com.example.backendschoolyandex.Json;
 
 
-import java.sql.Date;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
+
+import java.util.Date;
 import java.util.List;
 
 public class ItemsJson {
     private List<Items> items;
-    private Date updateDate;
+    private String updateDate;
 
     public List<Items> getItems() {
         return items;
@@ -16,11 +19,11 @@ public class ItemsJson {
         this.items = items;
     }
 
-    public Date getUpdateDate() {
+    public String getUpdateDate() {
         return updateDate;
     }
 
-    public void setUpdateDate(Date updateDate) {
+    public void setUpdateDate(String updateDate) {
         this.updateDate = updateDate;
     }
 

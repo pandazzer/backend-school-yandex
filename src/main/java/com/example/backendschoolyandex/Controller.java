@@ -15,36 +15,39 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
+import java.util.TimeZone;
 
 @RestController
 @RequestMapping
 public class Controller {
 
     private final ItemsRepo itemsRepo;
-//    private final UserRepository userRepository;
-//    private final TokenRepository tokenRepository;
 
 //    private final ApplicationContext context = new AnnotationConfigApplicationContext(Config.class);
     @Autowired
     public Controller(ItemsRepo itemsRepo) {
         this.itemsRepo = itemsRepo;
-//        this.userRepository = userRepository;
-//        this.tokenRepository = tokenRepository;
     }
 
     @PostMapping(path = "/imports")
-    public ResponseEntity getToken(@RequestBody String json) throws JsonProcessingException {
+    public ResponseEntity imports(@RequestBody String json) throws JsonProcessingException, ParseException {
         ObjectMapper mapper = new ObjectMapper();
         ItemsJson itemsJson = mapper.readValue(json, ItemsJson.class);
         List<ItemsJson.Items> itemsList = itemsJson.getItems();
-        for (ItemsJson.Items x : itemsList){
-            if (x.getType().equals("OFFER") && x.getPrice() >= 0){
-                Product product = new Product(x.getId(), x.getName(), x.getParentId(), x.getPrice(), x.getType(), itemsJson.getUpdateDate());
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+        sdf.setTimeZone(TimeZone.getTimeZone("GMT+3"));
+        Date date = sdf.parse(itemsJson.getUpdateDate());
+        for (ItemsJson.Items items : itemsList){
+            if (items.getType().equals("OFFER") && items.getPrice() >= 0){
+                Product product = new Product(items.getId(), items.getName(), items.getParentId(), items.getPrice(), items.getType(), date);
+                dateUpdate(items.getParentId(), date);
                 itemsRepo.save(product);
-            }else if (x.getType().equals("CATEGORY") && x.getPrice() == 0){
-                Product product = new Product(x.getId(), x.getName(), x.getParentId(), null, x.getType(), itemsJson.getUpdateDate());
+            }else if (items.getType().equals("CATEGORY") && items.getPrice() == 0){
+                Product product = new Product(items.getId(), items.getName(), items.getParentId(), null, items.getType(), date);
                 itemsRepo.save(product);
             }else{
                 ErrorResponseJson errorResponseJson = new ErrorResponseJson(400, "Validation Failed");
@@ -53,6 +56,17 @@ public class Controller {
             }
         }
         return new ResponseEntity(HttpStatus.OK);
+    }
+
+    private void dateUpdate(String id, Date date){
+        if (id != null){
+            Product product = itemsRepo.findByid(id);
+            product.setUpdateDate(date);
+            if (product.getParentId() != null){
+                dateUpdate(product.getParentId(), date);
+            }
+        }
+
     }
 
     @DeleteMapping(path = "/delete/{id}")
@@ -94,7 +108,7 @@ public class Controller {
 
     }
 
-    public HelpClass avgPrice(String id) throws JsonProcessingException {
+    private HelpClass avgPrice(String id) throws JsonProcessingException {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
         Product pr = itemsRepo.findByid(id);
         List<Product> productList = itemsRepo.findByparentId(id);

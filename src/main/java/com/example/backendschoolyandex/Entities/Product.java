@@ -19,7 +19,6 @@ public class Product {
     @Column(nullable = false)
     private String type;
     @Column(name = "updatedate", columnDefinition = "TIMESTAMP")
-
     private Date updateDate;
 
 

@@ -16,7 +16,7 @@ public class ImportsService {
         ItemsJson itemsJson = mapper.readValue(json, ItemsJson.class);
         List<ItemsJson.Items> itemsList = itemsJson.getItems();
         for (ItemsJson.Items x : itemsList){
-            Product product = new Product(x.getId(), x.getName(), x.getParentId(), x.getPrice(), x.getType(), itemsJson.getUpdateDate());
+          //  Product product = new Product(x.getId(), x.getName(), x.getParentId(), x.getPrice(), x.getType(), itemsJson.getUpdateDate());
         }
         return ResponseEntity.ok().body(json);
     }
