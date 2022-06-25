@@ -14,12 +14,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
-
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
-import java.util.TimeZone;
 
 @RestController
 @RequestMapping
@@ -40,7 +38,7 @@ public class Controller {
         ItemsJson itemsJson = mapper.readValue(json, ItemsJson.class);
         List<ItemsJson.Items> itemsList = itemsJson.getItems();
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
-        sdf.setTimeZone(TimeZone.getTimeZone("GMT+3"));
+//        sdf.setTimeZone(TimeZone.getTimeZone("GMT+3"));
         Date date = sdf.parse(itemsJson.getUpdateDate());
         for (ItemsJson.Items items : itemsList){
             if (items.getType().equals("OFFER") && items.getPrice() >= 0){

@@ -11,9 +11,3 @@ get: localhost:80/nodes/{id}
 
 Запустить приложение можно через класс BackendSchoolYandexApplication
 
-Можно собрать Docker контейнер, находясь в папке проекта и набрав в терминале:
-
-sudo docker build . --tag bsy
-и затем:
-
-sudo docker run -p 80:80 bsy

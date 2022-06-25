@@ -1,8 +1,6 @@
 package com.example.backendschoolyandex.Json;
 
 
-import java.util.Date;
-
 public class AVGPriceJson {
     private String type;
     private String name;
