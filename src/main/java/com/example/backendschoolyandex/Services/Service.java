@@ -1,4 +1,4 @@
-package com.example.backendschoolyandex;
+package com.example.backendschoolyandex.Services;
 
 import com.example.backendschoolyandex.Entities.Product;
 import com.example.backendschoolyandex.Json.AVGPriceJson;
@@ -11,28 +11,24 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.stereotype.Component;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+@Component
+public class Service {
 
-@RestController
-@RequestMapping
-public class Controller {
 
     private final ItemsRepo itemsRepo;
     ObjectMapper mapper = new ObjectMapper();
-
     @Autowired
-    public Controller(ItemsRepo itemsRepo) {
+    public Service(ItemsRepo itemsRepo) {
         this.itemsRepo = itemsRepo;
     }
 
-    @PostMapping(path = "/imports")
-    public ResponseEntity imports(@RequestBody String json) throws JsonProcessingException, ParseException {
+    public ResponseEntity imports(String json) throws JsonProcessingException, ParseException {
 
         ItemsJson itemsJson = mapper.readValue(json, ItemsJson.class);
         List<ItemsJson.Items> itemsList = itemsJson.getItems();
@@ -55,20 +51,17 @@ public class Controller {
         return new ResponseEntity(HttpStatus.OK);
     }
 
-    private void dateUpdate(String id, Date date){
-        if (id != null){
+    private void dateUpdate(String id, Date date) {
+        if (id != null) {
             Product product = itemsRepo.findByid(id);
             product.setUpdateDate(date);
-            if (product.getParentId() != null){
+            if (product.getParentId() != null) {
                 dateUpdate(product.getParentId(), date);
             }
         }
-
     }
 
-    @DeleteMapping(path = "/delete/{id}")
-    @Transactional
-    public ResponseEntity delete(@PathVariable("id") String id) throws JsonProcessingException {
+    public ResponseEntity delete(String id) throws JsonProcessingException {
         if (!isValidUUID(id)){
             String body = mapper.writeValueAsString(new ErrorResponseJson(404, "Validation Failed"));
             return ResponseEntity.status(400).contentType(MediaType.APPLICATION_JSON).body(body);
@@ -87,8 +80,7 @@ public class Controller {
         return new ResponseEntity(HttpStatus.OK);
     }
 
-    @GetMapping(path = "/nodes/{id}")
-    public ResponseEntity nodes(@PathVariable("id") String id) throws JsonProcessingException {
+    public ResponseEntity nodes(String id) throws JsonProcessingException {
         if (!isValidUUID(id)){
             String body = mapper.writeValueAsString(new ErrorResponseJson(404, "Validation Failed"));
             return ResponseEntity.status(400).contentType(MediaType.APPLICATION_JSON).body(body);
@@ -97,12 +89,11 @@ public class Controller {
             String body = mapper.writeValueAsString(new ErrorResponseJson(404, "Item not found"));
             return ResponseEntity.status(404).contentType(MediaType.APPLICATION_JSON).body(body);
         }
-        String response = mapper.writeValueAsString(avgPrice(id).stringJson);
+        String response = mapper.writeValueAsString(avgPrice(id).getStringJson());
         return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(response);
-
     }
 
-    private HelpClass avgPrice(String id) {
+    public HelpClass avgPrice(String id) {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
         Product pr = itemsRepo.findByid(id);
         List<Product> productList = itemsRepo.findByparentId(id);
@@ -140,19 +131,7 @@ public class Controller {
         }
     }
 
-    private static class HelpClass{
-        AVGPriceJson stringJson;
-        int sumItems;
-        int countItems;
-
-        public HelpClass(AVGPriceJson stringJson, int sumItems, int countItems) {
-            this.stringJson = stringJson;
-            this.sumItems = sumItems;
-            this.countItems = countItems;
-        }
-    }
-
-    public static boolean isValidUUID(String uuid) {
+    private boolean isValidUUID(String uuid) {
         // проверка UUID
         String regex = "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$";
         if (uuid.matches(regex)) {
@@ -160,4 +139,6 @@ public class Controller {
         }
         return false;
     }
+
+
 }
