@@ -26,7 +26,6 @@ public class Controller {
     private final ItemsRepo itemsRepo;
     ObjectMapper mapper = new ObjectMapper();
 
-//    private final ApplicationContext context = new AnnotationConfigApplicationContext(Config.class);
     @Autowired
     public Controller(ItemsRepo itemsRepo) {
         this.itemsRepo = itemsRepo;
@@ -38,7 +37,6 @@ public class Controller {
         ItemsJson itemsJson = mapper.readValue(json, ItemsJson.class);
         List<ItemsJson.Items> itemsList = itemsJson.getItems();
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
-//        sdf.setTimeZone(TimeZone.getTimeZone("GMT+3"));
         Date date = sdf.parse(itemsJson.getUpdateDate());
         for (ItemsJson.Items items : itemsList){
             if (items.getType().equals("OFFER") && items.getPrice() >= 0){
@@ -104,7 +102,7 @@ public class Controller {
 
     }
 
-    private HelpClass avgPrice(String id) throws JsonProcessingException {
+    private HelpClass avgPrice(String id) {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
         Product pr = itemsRepo.findByid(id);
         List<Product> productList = itemsRepo.findByparentId(id);
