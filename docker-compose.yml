@@ -1,0 +1,22 @@
+version: '3.1'
+
+services:
+  db:
+    image: postgres
+    restart: always
+    ports:
+    - 5432:5432
+    environment:
+      POSTGRES_DB: postgres
+      POSTGRES_PASSWORD: 1231
+     
+  backend:
+    image: megamarket
+    restart: always
+    ports:
+    - 8084:8084
+    depends_on:
+     - db
+    links:
+     - db:database
+
